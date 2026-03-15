@@ -1,5 +1,10 @@
 {
-  "outputDirectory": ".",
+  "version": 2,
+  "builds": [
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.json", "use": "@vercel/static" },
+    { "src": "*.svg", "use": "@vercel/static" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
