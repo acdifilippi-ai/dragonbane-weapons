@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Improvised Weapons</title>
+<script type="module">
+  import OBR from "https://cdn.jsdelivr.net/npm/@owlbear-rodeo/sdk@2.4.4/+esm";
+  OBR.onReady(() => { document.body.style.visibility = "visible"; });
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    visibility: hidden;
+    font-family: Georgia, serif;
+    background: #1a1208;
+    color: #2a1a0a;
+    min-height: 100vh;
+    padding: 12px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c8a96e;
+    margin-bottom: 10px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .filters button {
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #5a3e1a;
+    background: #2a1e0e;
+    color: #c8a96e;
+    cursor: pointer;
+    font-family: Georgia, serif;
+  }
+
+  .filters button.active {
+    background: #5a3e1a;
+    color: #f0daa0;
+    border-color: #c8a96e;
+  }
+
+  .draw-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    background: #3d2a0e;
+    color: #f0daa0;
+    border: 1px solid #c8a96e;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .draw-btn:hover { background: #5a3e1a; }
+
+  .card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #8a6030;
+    display: none;
+  }
+
+  .card.visible { display: block; }
+
+  .card-location {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 14px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .card-name {
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .card-rules {
+    padding: 14px 16px;
+  }
+
+  .card-rule {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .card-rule .diamond { flex-shrink: 0; margin-top: 2px; }
+
+  .card-footer {
+    padding: 8px 16px;
+    text-align: center;
+    border-top: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .card-footer span {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 14px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 12px;
+    color: #7a5a30;
+    border: 1px dashed #4a3010;
+    border-radius: 6px;
+  }
+
+  /* Location themes */
+  .loc-inn .card-location { background: #1B5E3B; }
+  .loc-inn .card-name     { background: #2d7a54; }
+  .loc-inn .card-rules    { background: #ede3cc; }
+  .loc-inn .card-footer   { background: #ede3cc; }
+  .loc-inn .card-rule     { color: #2a1a0a; }
+  .loc-inn .diamond       { color: #1B5E3B; }
+  .loc-inn .card-footer span { color: #1B5E3B; border-color: #1B5E3B66; }
+
+  .loc-cave .card-location { background: #3a2a1a; }
+  .loc-cave .card-name     { background: #5a3e28; }
+  .loc-cave .card-rules    { background: #e8dfc8; }
+  .loc-cave .card-footer   { background: #e8dfc8; }
+  .loc-cave .card-rule     { color: #2a1a0a; }
+  .loc-cave .diamond       { color: #3a2a1a; }
+  .loc-cave .card-footer span { color: #3a2a1a; border-color: #3a2a1a66; }
+
+  .loc-forest .card-location { background: #1a3d1f; }
+  .loc-forest .card-name     { background: #2a5c30; }
+  .loc-forest .card-rules    { background: #e2ecda; }
+  .loc-forest .card-footer   { background: #e2ecda; }
+  .loc-forest .card-rule     { color: #2a1a0a; }
+  .loc-forest .diamond       { color: #1a3d1f; }
+  .loc-forest .card-footer span { color: #1a3d1f; border-color: #1a3d1f66; }
+</style>
+</head>
+<body>
+
+<h1>⚔ Improvised Weapons</h1>
+
+<div class="filters">
+  <button class="active" data-loc="Any">Any</button>
+  <button data-loc="Inn">🍺 Inn</button>
+  <button data-loc="Cave">🦇 Cave</button>
+  <button data-loc="Forest">🌲 Forest</button>
+</div>
+
+<button class="draw-btn" id="drawBtn">⚔ Improvise Weaponry!</button>
+
+<div class="card" id="card">
+  <div class="card-location">
+    <span id="locLabel"></span>
+    <span>Dragonbane Core Set</span>
+  </div>
+  <div class="card-name" id="weaponName"></div>
+  <div class="card-rules" id="weaponRules"></div>
+  <div class="card-footer"><span id="locFooter"></span></div>
+</div>
+
+<div class="empty" id="empty">Select a location and draw your weapon.</div>
+
+<script>
+const weapons = {
+  Inn: [
+    { name: "Boiling Cauldron", rules: ["Throw the boiling water in a cone 4 meters in both length and width.", "Everyone within the cone suffers 2D6 damage.", "The attack can be dodged, but not parried.", "Armor has no effect."] },
+    { name: "Bucket of Soapy Water", rules: ["Throw the soapy water in a cone 4 meters in both length and width.", "Everyone within the cone falls down.", "The attack can be dodged, but not parried."] },
+    { name: "Burning Firewood", rules: ["Hit an enemy within 2 meters with the firewood.", "Requires one free hand.", "The attack hits automatically and inflicts 2D6 fire damage plus damage bonus.", "The attack can be dodged or parried.", "The firewood can then be used as a torch."] },
+    { name: "Rummaging Pig", rules: ["Make a BUSHCRAFT roll to agitate the pig and make it attack an enemy of your choice within 10 meters.", "The attack hits automatically and inflicts 3D6 bludgeoning damage.", "The attack can be dodged but not parried.", "Then the pig storms off."] },
+    { name: "Wine Bottle", rules: ["Hit an enemy within 2 meters with the bottle.", "Requires one free hand.", "The attack hits automatically and inflicts 2D6 bludgeoning damage plus damage bonus.", "The attack can be dodged or parried.", "The enemy gets wine in their eyes, giving a bane on all actions until your next turn."] },
+    { name: "Chandelier", rules: ["Swing yourself from the chandelier and perform a melee attack.", "You can take a normal movement action without triggering free attacks.", "The melee attack must be unarmed, but cannot be dodged or parried.", "If the attack fails, you fall to the ground and take D6 bludgeoning damage."] },
+    { name: "Bar Stool", rules: ["Smash a bar stool over an enemy within 2 meters.", "Requires one free hand.", "The attack hits automatically and inflicts 2D6 bludgeoning damage plus damage bonus.", "The attack can be dodged or parried.", "The stool splinters and cannot be used again."] },
+    { name: "Tankard of Ale", rules: ["Hurl the tankard at an enemy within 6 meters.", "The attack inflicts D6 bludgeoning damage.", "The ale drenches the enemy — if near an open flame, they must make an ACROBATICS roll or catch fire.", "The attack can be dodged but not parried."] },
+    { name: "Salt Shaker", rules: ["Throw a handful of salt into the eyes of an enemy within 2 meters.", "The enemy suffers a bane on all attacks until they spend an action clearing their eyes.", "The attack can be dodged but not parried.", "Armor has no effect."] }
+  ],
+  Cave: [
+    { name: "Stalactite", rules: ["Shove an enemy within 2 meters into the sharp rock formations hanging from the ceiling.", "The attack hits automatically and inflicts 2D6 piercing damage plus damage bonus.", "The attack can be dodged but not parried.", "Armor has no effect, except helmets."] },
+    { name: "Stalagmite", rules: ["Shove an enemy within 2 meters into a tall rock formation on the cave floor.", "The attack hits automatically and inflicts D6 bludgeoning damage plus damage bonus and knocks the enemy to the ground.", "The attack can be dodged but not parried."] },
+    { name: "Torch", rules: ["Grab a torch from the wall and strike an enemy within 2 meters.", "Requires one free hand.", "The attack hits automatically and inflicts 2D6 fire damage plus damage bonus.", "The attack can be dodged or parried.", "You may then keep the torch."] },
+    { name: "Puddle", rules: ["Roll to trip the enemy.", "If you succeed, the enemy must spend one action and make an ACROBATICS roll to get back up."] },
+    { name: "Crevice", rules: ["Roll to trip the enemy.", "If you succeed, the enemy falls into a 2D6 meter deep crevice and suffers falling damage.", "Climbing up requires an ACROBATICS roll."] },
+    { name: "Bats", rules: ["Make a BUSHCRAFT roll to agitate the bats and make them attack an enemy within 10 meters.", "The bats keep attacking the enemy for D3 rounds.", "If your BUSHCRAFT roll fails, the bats attack you instead."] },
+    { name: "Underground Mushrooms", rules: ["Crush a cluster of spore-filled mushrooms and blow the cloud toward an enemy within 4 meters.", "The enemy must make a CONSTITUTION roll or be Confused until end of their next turn.", "The attack can be dodged but not parried.", "Armor has no effect."] },
+    { name: "Loose Rubble", rules: ["Hurl a fistful of sharp stone shards at an enemy within 6 meters.", "The attack inflicts D6 piercing damage.", "The attack can be dodged but not parried.", "On a Dragon roll, the enemy is also Blinded until end of their next turn."] }
+  ],
+  Forest: [
+    { name: "Low Branch", rules: ["Swing yourself from the branch and perform a melee attack.", "You can make a normal move without triggering free attacks.", "The melee attack must be unarmed, but cannot be dodged or parried.", "If the attack fails, you fall to the ground and take D6 bludgeoning damage."] },
+    { name: "Wasp Nest", rules: ["Roll BUSHCRAFT to pick up the wasp's nest and hurl it at an enemy within 10 meters.", "The enemy gets badly stung, inflicting 2D6 damage and a bane on all actions for a Shift.", "The attack can be dodged but not parried.", "Armor has no effect.", "If your BUSHCRAFT roll fails, the wasps sting you instead."] },
+    { name: "Gnarled Roots", rules: ["Roll to trip the enemy.", "If you succeed, the enemy must spend one action and make an ACROBATICS roll to get back up."] },
+    { name: "Boulder", rules: ["Make an ACROBATICS roll to jump up on the boulder and throw yourself at an enemy within 2 meters.", "The attack inflicts 2D6 bludgeoning damage plus damage bonus and cannot be dodged or parried.", "If it succeeds, both you and the enemy drop to the ground.", "If your roll fails, only you fall over and suffer D6 damage."] },
+    { name: "Viper", rules: ["Roll BUSHCRAFT to pick up the snake and throw it at an enemy within 10 meters.", "The enemy gets bitten, inflicting D6 damage and a lethal poison with Potency 12 if the bite pierces armor.", "The attack can be dodged but not parried.", "If your BUSHCRAFT roll fails, the snake bites you instead."] },
+    { name: "Patch of Dirt", rules: ["Throw dirt in the eyes of an enemy within 10 meters.", "The enemy suffers D6 damage (armor has no effect) and gets a bane on all actions for the rest of the combat.", "The attack can be dodged but not parried."] },
+    { name: "Thornbush", rules: ["Shove an enemy within 2 meters into a dense thornbush.", "The attack hits automatically and inflicts D6 piercing damage plus damage bonus.", "The enemy is Entangled and must spend an action making a MIGHT roll to break free.", "The attack can be dodged but not parried."] },
+    { name: "Beehive", rules: ["Roll BUSHCRAFT to knock a beehive down onto an enemy within 4 meters.", "The enemy is swarmed for D3 rounds, suffering D6 damage at the start of each of their turns.", "The attack can be dodged but not parried.", "Armor has no effect.", "If your BUSHCRAFT roll fails, the bees swarm you instead."] },
+    { name: "Muddy Slope", rules: ["Roll to trip the enemy at the edge of a muddy slope.", "If you succeed, the enemy slides D6 meters downhill and is knocked prone.", "Climbing back up costs a full movement action.", "The attack can be dodged but not parried."] }
+  ]
+};
+
+const icons = { Inn: "🍺", Cave: "🦇", Forest: "🌲" };
+let selectedLoc = "Any";
+
+document.querySelectorAll(".filters button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedLoc = btn.dataset.loc;
+  });
+});
+
+document.getElementById("drawBtn").addEventListener("click", () => {
+  let loc = selectedLoc;
+  if (loc === "Any") {
+    const locs = Object.keys(weapons);
+    loc = locs[Math.floor(Math.random() * locs.length)];
+  }
+  const pool = weapons[loc];
+  const w = pool[Math.floor(Math.random() * pool.length)];
+
+  const card = document.getElementById("card");
+  card.className = "card visible loc-" + loc.toLowerCase();
+
+  document.getElementById("locLabel").textContent = icons[loc] + " " + loc;
+  document.getElementById("weaponName").textContent = w.name;
+  document.getElementById("locFooter").textContent = loc;
+
+  const rulesEl = document.getElementById("weaponRules");
+  rulesEl.innerHTML = w.rules.map(r =>
+    `<div class="card-rule"><span class="diamond">✦</span><span>${r}</span></div>`
+  ).join("");
+
+  document.getElementById("empty").style.display = "none";
+});
+</script>
+</body>
+</html>
