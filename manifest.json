@@ -3,12 +3,11 @@
   "description": "Randomly draw an improvised weapon for Dragonbane.",
   "author": "Di",
   "version": "1.0.0",
-  "manifestVersion": 1,
-  "permissions": [],
+  "manifest_version": 1,
   "action": {
     "title": "Improvised Weapons",
     "icon": "/icon.svg",
-    "href": "/index.html",
+    "popover": "/index.html",
     "height": 600,
     "width": 320
   }
