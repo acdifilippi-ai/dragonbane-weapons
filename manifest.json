@@ -7,7 +7,7 @@
   "action": {
     "title": "Improvised Weapons",
     "icon": "/icon.svg",
-    "popover": "/index.html",
+    "popover": "/",
     "height": 600,
     "width": 320
   }
